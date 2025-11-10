@@ -4,30 +4,24 @@ import time
 import os
 from datetime import datetime, timedelta
 
-# Page configuration (Icon updated to match theme)
+# Page configuration
 st.set_page_config(
     page_title="Login - Resume Analyzer Pro",
-    page_icon="⚡",
+    page_icon="⚡", # Changed icon
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# --- MODERN CSS (DARK EMERALD THEME) ---
+# --- NEW MODERN SAAS CSS ---
 st.markdown("""
 <style>
     /* Import Google Font 'Inter' */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-    /* Animation: Fade Up */
-    @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* Animation: Fade In */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     /* Base app styling */
@@ -37,16 +31,7 @@ st.markdown("""
 
     .stApp {
         background-color: #0d1117; /* Dark Slate Background */
-        color: #e0e0e0;
-        
-        /* Emerald "Thunder Web" Background */
-        background-image: 
-            linear-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-            linear-gradient(45deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px),
-            linear-gradient(-45deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
-        background-size: 70px 70px, 70px 70px, 90px 90px, 90px 90px;
-        background-position: center center;
+        color: #c9d1d9;
     }
 
     /* Remove default Streamlit padding */
@@ -58,28 +43,22 @@ st.markdown("""
     }
 
     /* Hide Streamlit Header/Footer */
-    footer {
-        visibility: hidden;
-    }
-    header[data-testid="stHeader"] {
-        visibility: hidden;
-    }
+    footer { visibility: hidden; }
+    header[data-testid="stHeader"] { visibility: hidden; }
 
     /* --- LOGIN PAGE SPECIFIC STYLES --- */
 
-    /* Login Card (Glassmorphic) */
+    /* Login Card (Solid, layered) */
     .login-container {
-        background: rgba(13, 17, 23, 0.6);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        background: #161b22; /* Lighter dark color */
+        border: 1px solid #30363d; /* Subtle border */
         color: white;
         padding: 2.5rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        animation: fadeUp 0.6s ease-out forwards;
-        margin: 0; /* Remove default margin */
+        border-radius: 10px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.5s ease-out;
         max-width: 450px;
+        margin: 0 auto; /* Ensure centering */
     }
     
     .login-header h1 {
@@ -88,30 +67,30 @@ st.markdown("""
         font-size: 2.25rem;
     }
     .login-header p {
-        color: #b0b0b0;
+        color: #8b949e;
         font-size: 1.1rem;
     }
 
     /* Form Inputs */
     [data-testid="stTextInput"] label {
-        color: #b0b0b0;
+        color: #c9d1d9;
         font-weight: 600;
     }
     [data-testid="stTextInput"] input {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        background-color: #0d1117; /* Darker bg */
+        border: 1px solid #30363d;
         color: #ffffff;
         border-radius: 8px;
         transition: all 0.3s ease;
     }
     [data-testid="stTextInput"] input:focus {
-        border-color: #10b981;
+        border-color: #10b981; /* Emerald */
         box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
     }
 
     /* Button styling (Emerald Glow) */
     .stButton > button {
-        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        background-color: #10b981; /* Solid Emerald */
         color: #ffffff;
         border: none;
         padding: 0.75rem 1.5rem;
@@ -119,17 +98,13 @@ st.markdown("""
         font-weight: 700;
         font-family: 'Inter', sans-serif;
         transition: all 0.3s ease;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px) scale(1.03);
-        box-shadow: 0 0 25px rgba(16, 185, 129, 0.6), 0 6px 15px rgba(0, 0, 0, 0.3);
-        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-    }
-    
-    .stButton > button:active {
-        transform: translateY(-1px);
+        transform: translateY(-3px);
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+        background-color: #34d399;
     }
 
     /* Form-specific button width */
@@ -139,24 +114,24 @@ st.markdown("""
 
     /* Expander for Demo Credentials */
     [data-testid="stExpander"] {
-        background: rgba(13, 17, 23, 0.3);
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        border-radius: 12px;
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 10px;
         margin-top: 1rem;
     }
     [data-testid="stExpander"] summary {
-        color: #e0e0e0;
+        color: #c9d1d9;
         font-weight: 600;
     }
     .demo-credentials {
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(16, 185, 129, 0.1);
+        background: #0d1117;
+        border: 1px solid #30363d;
         border-radius: 8px;
         padding: 1rem;
-        color: #b0b0b0;
+        color: #8b949e;
     }
     .demo-credentials strong {
-        color: #e0e0e0;
+        color: #c9d1d9;
     }
 
     /* Native Alerts */
@@ -176,11 +151,12 @@ st.markdown("""
     }
     
     /* Footer override */
+    hr { border-top: 1px solid #30363d; }
     div[style="text-align: center; color: #666;"] p {
-        color: #888888 !important;
+        color: #8b949e !important;
     }
     div[style="text-align: center; color: #666;"] p strong {
-        color: #b0b0b0 !important;
+        color: #c9d1d9 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -223,76 +199,79 @@ def create_session_token(user_data):
 # (UNCHANGED MAIN FUNCTION)
 def main():
     # Center the login form
-    st.markdown("""
-    <div class="login-container">
-        <div class="login-header">
-            <h1>🔐 Login</h1>
-            <p>Access Resume Analyzer Pro</p>
-        </div>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    # Login form
-    with st.form("login_form"):
-        email = st.text_input("Email", placeholder="demo@example.com", key="email")
-        password = st.text_input("Password", type="password", placeholder="demo123", key="password")
-        
-        submit_button = st.form_submit_button("Login")
-        
-        if submit_button:
-            if not email or not password:
-                st.error("⚠️ Please enter both email and password")
-            else:
-                # Attempt authentication
-                is_authenticated, user_data = authenticate_user(email, password)
-                
-                if is_authenticated:
-                    # Create session
-                    session_token = create_session_token(user_data)
-                    
-                    # Update session state
-                    st.session_state.authenticated = True
-                    st.session_state.user_id = email
-                    st.session_state.user_name = user_data["name"]
-                    st.session_state.user_role = user_data["role"]
-                    st.session_state.session_token = session_token
-                    st.session_state.login_time = datetime.now()
-                    
-                    # Show success message
-                    st.success(f"✅ Welcome, {user_data['name']}!")
-                    
-                    # Redirect to main app
-                    time.sleep(1)
-                    st.switch_page("streamlit_app.py")
-                else:
-                    st.error("❌ Invalid email or password")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Demo credentials
-    with st.expander("🎯 Demo Credentials"):
+    with col2:
         st.markdown("""
-        <div class="demo-credentials">
-            <strong>User Account:</strong><br>
-            Email: demo@example.com<br>
-            Password: demo123<br><br>
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🔐 Login</h1>
+                <p>Access Resume Analyzer Pro</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Login form
+        with st.form("login_form"):
+            email = st.text_input("Email", placeholder="demo@example.com", key="email")
+            password = st.text_input("Password", type="password", placeholder="demo123", key="password")
             
-            <strong>Admin Account:</strong><br>
-            Email: admin@example.com<br>
-            Password: admin123
+            submit_button = st.form_submit_button("Login")
+            
+            if submit_button:
+                if not email or not password:
+                    st.error("⚠️ Please enter both email and password")
+                else:
+                    # Attempt authentication
+                    is_authenticated, user_data = authenticate_user(email, password)
+                    
+                    if is_authenticated:
+                        # Create session
+                        session_token = create_session_token(user_data)
+                        
+                        # Update session state
+                        st.session_state.authenticated = True
+                        st.session_state.user_id = email
+                        st.session_state.user_name = user_data["name"]
+                        st.session_state.user_role = user_data["role"]
+                        st.session_state.session_token = session_token
+                        st.session_state.login_time = datetime.now()
+                        
+                        # Show success message
+                        st.success(f"✅ Welcome, {user_data['name']}!")
+                        
+                        # Redirect to main app
+                        time.sleep(1)
+                        st.switch_page("streamlit_app.py")
+                    else:
+                        st.error("❌ Invalid email or password")
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Demo credentials
+        with st.expander("🎯 Demo Credentials"):
+            st.markdown("""
+            <div class="demo-credentials">
+                <strong>User Account:</strong><br>
+                Email: demo@example.com<br>
+                Password: demo123<br><br>
+                
+                <strong>Admin Account:</strong><br>
+                Email: admin@example.com<br>
+                Password: admin123
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Features preview
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center; color: #666;">
+            <p><strong>✨ Features:</strong></p>
+            <p>• ATS Score Analysis<br>
+            • Keyword Optimization<br>
+            • Resume Rewrites<br>
+            • Skills Alignment</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Features preview
-    st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center; color: #666;">
-        <p><strong>✨ Features:</strong></p>
-        <p>• ATS Score Analysis<br>
-        • Keyword Optimization<br>
-        • Resume Rewrites<br>
-        • Skills Alignment</p>
-    </div>
-    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     # Check if already authenticated

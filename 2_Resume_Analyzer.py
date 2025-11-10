@@ -11,30 +11,24 @@ import io
 from auth import require_auth
 from utils import call_n8n_webhook, poll_analysis_status, format_analysis_results
 
-# Page configuration (Icon updated to match theme)
+# Page configuration
 st.set_page_config(
     page_title="Resume Analyzer - Resume Analyzer Pro",
-    page_icon="⚡",
+    page_icon="⚡", # Changed icon
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# --- MODERN CSS (DARK EMERALD THEME) ---
+# --- NEW MODERN SAAS CSS ---
 st.markdown("""
 <style>
     /* Import Google Font 'Inter' */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-    /* Animation: Fade Up */
-    @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* Animation: Fade In */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     /* Base app styling */
@@ -44,16 +38,7 @@ st.markdown("""
 
     .stApp {
         background-color: #0d1117; /* Dark Slate Background */
-        color: #e0e0e0;
-        
-        /* Emerald "Thunder Web" Background */
-        background-image: 
-            linear-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-            linear-gradient(45deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px),
-            linear-gradient(-45deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
-        background-size: 70px 70px, 70px 70px, 90px 90px, 90px 90px;
-        background-position: center center;
+        color: #c9d1d9;
     }
 
     /* Main container padding */
@@ -65,12 +50,8 @@ st.markdown("""
     }
 
     /* Hide Streamlit Header/Footer */
-    footer {
-        visibility: hidden;
-    }
-    header[data-testid="stHeader"] {
-        visibility: hidden;
-    }
+    footer { visibility: hidden; }
+    header[data-testid="stHeader"] { visibility: hidden; }
 
     /* Headings */
     h1, h2, h3, h4, h5, h6 {
@@ -82,52 +63,51 @@ st.markdown("""
     [data-testid="stAppViewContainer"] > .main h1:first-child {
         font-size: 2.75rem;
         color: #ffffff;
-        animation: fadeUp 0.6s ease-out forwards;
+        animation: fadeIn 0.5s ease-out;
     }
     
     /* Welcome markdown */
     [data-testid="stAppViewContainer"] > .main .stMarkdown:nth-of-type(1) {
         font-size: 1.1rem;
-        color: #b0b0b0;
+        color: #8b949e;
         margin-top: -1rem;
         margin-bottom: 1rem;
-        animation: fadeUp 0.7s ease-out forwards;
+        animation: fadeIn 0.6s ease-out;
     }
     
-    /* Glassmorphic Containers */
+    /* Solid, Layered Containers */
     .analysis-container, .upload-section, .results-section {
-        background: rgba(13, 17, 23, 0.6);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        background: #161b22; /* Lighter dark color */
+        border: 1px solid #30363d; /* Subtle border */
         padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         margin-bottom: 2rem;
-        animation: fadeUp 0.8s ease-out forwards;
+        animation: fadeIn 0.7s ease-out;
     }
     
     .upload-section {
         border-style: dashed;
         border-width: 2px;
-        border-color: rgba(16, 185, 129, 0.3);
+        border-color: #30363d;
+        background-color: #0d1117; /* Darker bg for dropzone */
     }
 
     /* Input Controls */
     [data-testid="stFileUploader"] label,
     [data-testid="stTextArea"] label {
-        color: #e0e0e0;
+        color: #c9d1d9;
         font-weight: 600;
     }
     
     [data-testid="stFileUploader"] [data-testid="stFileDropzone"] {
-        background: rgba(0, 0, 0, 0.2);
-        border-color: rgba(16, 185, 129, 0.3);
+        background: #0d1117;
+        border-color: #30363d;
     }
     
     [data-testid="stTextArea"] textarea {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        background-color: #0d1117;
+        border: 1px solid #30363d;
         color: #ffffff;
         border-radius: 8px;
     }
@@ -138,7 +118,7 @@ st.markdown("""
 
     /* Button styling (Emerald Glow) */
     .stButton > button {
-        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        background-color: #10b981;
         color: #ffffff;
         border: none;
         padding: 0.75rem 1.5rem;
@@ -146,42 +126,40 @@ st.markdown("""
         font-weight: 700;
         font-family: 'Inter', sans-serif;
         transition: all 0.3s ease;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px) scale(1.03);
-        box-shadow: 0 0 25px rgba(16, 185, 129, 0.6), 0 6px 15px rgba(0, 0, 0, 0.3);
-        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+        background-color: #34d399;
     }
 
     /* Sidebar */
     [data-testid="stSidebar"] {
-        background: rgba(13, 17, 23, 0.8) !important;
-        backdrop-filter: blur(12px) !important;
-        border-right: 1px solid rgba(16, 185, 129, 0.2);
+        background: #161b22 !important; /* Lighter dark */
+        border-right: 1px solid #30363d;
     }
     [data-testid="stSidebar"] [data-testid="stSelectbox"] label,
     [data-testid="stSidebar"] [data-testid="stCheckbox"] label,
     [data-testid="stSidebar"] h1, h2, h3, h4 {
-        color: #e0e0e0;
+        color: #c9d1d9;
     }
     [data-testid="stSidebar"] [data-testid="stMarkdown"] p {
-        color: #b0b0b0;
+        color: #8b949e;
     }
     
     /* Logout Button (Sidebar) */
     [data-testid="stSidebar"] .stButton > button {
         background: transparent;
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        color: #e0e0e0;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
         box-shadow: none;
     }
     [data-testid="stSidebar"] .stButton > button:hover {
-        background: rgba(16, 185, 129, 0.1);
-        border-color: #10b981;
+        background: #30363d;
+        border-color: #8b949e;
         color: #ffffff;
-        transform: translateY(-2px);
     }
     
     /* Native Alerts */
@@ -202,17 +180,17 @@ st.markdown("""
     
     /* Expander (Recent Analysis) */
     [data-testid="stExpander"] {
-        background: rgba(13, 17, 23, 0.3);
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        border-radius: 12px;
-        margin-top: 1rem;
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 10px;
     }
     [data-testid="stExpander"] summary {
-        color: #e0e0e0;
+        color: #c9d1d9;
         font-weight: 600;
     }
 
     /* --- RESULTS STYLES --- */
+    hr { border-top: 1px solid #30363d; }
     
     /* ATS Score */
     .ats-score {
@@ -229,18 +207,13 @@ st.markdown("""
 
     /* Metric */
     [data-testid="stMetric"] {
-        background: rgba(0, 0, 0, 0.2);
+        background: #0d1117;
         padding: 1rem;
         border-radius: 8px;
-        border: 1px solid rgba(16, 185, 129, 0.1);
+        border: 1px solid #30363d;
     }
-    [data-testid="stMetricLabel"] {
-        color: #b0b0b0;
-    }
-    [data-testid="stMetricValue"] {
-        color: #ffffff;
-        font-size: 2rem;
-    }
+    [data-testid="stMetricLabel"] { color: #8b949e; }
+    [data-testid="stMetricValue"] { color: #ffffff; font-size: 2rem; }
     
     /* Keyword Tags */
     .keyword-tag {
@@ -264,18 +237,19 @@ st.markdown("""
     
     /* Recommendation Card */
     .recommendation-card {
-        background: rgba(0, 0, 0, 0.2);
+        background: #0d1117;
+        border: 1px solid #30363d;
         border-left: 4px solid #10b981;
         padding: 1rem;
         margin: 1rem 0;
         border-radius: 5px;
-        color: #b0b0b0;
+        color: #8b949e;
     }
     .recommendation-card h4 {
         color: #34d399;
     }
     .recommendation-card p strong {
-        color: #e0e0e0;
+        color: #c9d1d9;
     }
     
     .impact-score {
@@ -291,15 +265,14 @@ st.markdown("""
     /* Download Buttons */
     [data-testid="stDownloadButton"] > button {
         background: transparent;
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        color: #e0e0e0;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
         box-shadow: none;
     }
     [data-testid="stDownloadButton"] > button:hover {
-        background: rgba(16, 185, 129, 0.1);
-        border-color: #10b981;
+        background: #30363d;
+        border-color: #8b949e;
         color: #ffffff;
-        transform: translateY(-2px);
     }
 
 </style>
@@ -481,7 +454,7 @@ def display_analysis_results(analysis_data):
         <div class="results-section" style="text-align: center; padding: 1.5rem;">
             <h3>ATS Compatibility Score</h3>
             <div class="ats-score {score_class}">{ats_score}</div>
-            <p style="color: #b0b0b0; margin-top: -1rem;">out of 100</p>
+            <p style="color: #8b949e; margin-top: -1rem;">out of 100</p>
         </div>
         """, unsafe_allow_html=True)
     
